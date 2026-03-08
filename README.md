@@ -1,5 +1,8 @@
 # 🔀 LLM-Powered Prompt Router
 
+## 🌐 Live Demo
+👉 [https://prompt-router-7suj.onrender.com](https://prompt-router-7suj.onrender.com)
+
 > An intelligent AI routing system that classifies user intent and delegates requests to specialized expert personas for high-quality, context-aware responses.
 
 **Built by Mohammad Riyaz** | Powered by Groq + Llama 3.3
