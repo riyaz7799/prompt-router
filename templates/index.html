@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>Prompt Router — Mohammad Riyaz</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔀</text></svg>"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'><rect width='44' height='44' rx='12' fill='%237c6af7'/><circle cx='12' cy='22' r='3' fill='white'/><line x1='15' y1='22' x2='22' y2='22' stroke='white' stroke-width='2'/><line x1='22' y1='22' x2='29' y2='14' stroke='white' stroke-width='2'/><line x1='22' y1='22' x2='29' y2='22' stroke='white' stroke-width='2'/><line x1='22' y1='22' x2='29' y2='30' stroke='white' stroke-width='2'/><circle cx='32' cy='14' r='2.5' fill='%234ade80'/><circle cx='32' cy='22' r='2.5' fill='%2338bdf8'/><circle cx='32' cy='30' r='2.5' fill='%23f76a8c'/></svg>"/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -419,17 +419,25 @@
 <header>
   <div class="header-top">
     <div class="logo">
-      <div class="logo-icon">🔀</div>
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="22" r="3.5" fill="white"/>
+          <line x1="15.5" y1="22" x2="22" y2="22" stroke="white" stroke-width="2.5"/>
+          <line x1="22" y1="22" x2="29" y2="13" stroke="white" stroke-width="2.5"/>
+          <line x1="22" y1="22" x2="29" y2="22" stroke="white" stroke-width="2.5"/>
+          <line x1="22" y1="22" x2="29" y2="31" stroke="white" stroke-width="2.5"/>
+          <circle cx="32" cy="13" r="3" fill="#4ade80"/>
+          <circle cx="32" cy="22" r="3" fill="#38bdf8"/>
+          <circle cx="32" cy="31" r="3" fill="#f76a8c"/>
+        </svg>
+      </div>
       <div>
         <h1>Prompt Router</h1>
         <div class="subtitle">LLM-POWERED INTENT CLASSIFICATION</div>
         <div class="author">by Mohammad Riyaz</div>
       </div>
     </div>
-    <div class="memory-badge">
-      <div class="memory-dot"></div>
-      MEMORY ON
-    </div>
+
   </div>
   <div class="personas">
     <span class="badge code">🧑‍💻 code</span>
@@ -447,10 +455,24 @@
 <main>
   <div id="chat">
     <div class="welcome">
-      <div class="welcome-icon">🔀</div>
+      <div class="welcome-icon">
+        <svg width="52" height="52" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="44" height="44" rx="12" fill="url(#wg)"/>
+          <circle cx="12" cy="22" r="3.5" fill="white"/>
+          <line x1="15.5" y1="22" x2="22" y2="22" stroke="white" stroke-width="2.5"/>
+          <line x1="22" y1="22" x2="29" y2="13" stroke="white" stroke-width="2.5"/>
+          <line x1="22" y1="22" x2="29" y2="22" stroke="white" stroke-width="2.5"/>
+          <line x1="22" y1="22" x2="29" y2="31" stroke="white" stroke-width="2.5"/>
+          <circle cx="32" cy="13" r="3" fill="#4ade80"/>
+          <circle cx="32" cy="22" r="3" fill="#38bdf8"/>
+          <circle cx="32" cy="31" r="3" fill="#f76a8c"/>
+          <defs><linearGradient id="wg" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7c6af7"/><stop offset="1" stop-color="#5b4fd4"/>
+          </linearGradient></defs>
+        </svg>
+      </div>
       <h2>Ask me anything</h2>
       <p>I detect your intent and route you to the right expert across 8 domains.</p>
-      <div class="memory-note">🧠 Memory enabled — I remember your context</div>
     </div>
   </div>
 
@@ -467,7 +489,7 @@
 </main>
 
 <footer>
-  Built by Mohammad Riyaz · LLM Prompt Router · 8 Expert Domains · Powered by Groq + Llama 3
+  Prompt Router · by Mohammad Riyaz
 </footer>
 
 <script>
@@ -510,7 +532,6 @@
         <div class="welcome-icon">🔀</div>
         <h2>Conversation reset</h2>
         <p>Memory cleared. Start fresh!</p>
-        <div class="memory-note">🧠 Memory enabled — I remember your context</div>
       </div>`;
     msgCount = 0;
   });
