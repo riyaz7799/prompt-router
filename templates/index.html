@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prompt Router — Mohammad Riyaz</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔀</text></svg>"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --accent: #7c6af7;
+      --accent2: #f76a8c;
+      --text: #e8e8f0;
+      --muted: #5a5a7a;
+      --code: #4ade80;
+      --data: #38bdf8;
+      --writing: #fb923c;
+      --career: #a78bfa;
+      --unclear: #f43f5e;
+      --general: #34d399;
+      --chat: #e879f9;
+      --math: #fbbf24;
+      --health: #f87171;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,106,247,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,106,247,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      width: 100%;
+      max-width: 860px;
+      padding: 48px 24px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+
+    .logo-icon {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+
+    h1 {
+      font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .author {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    .memory-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      background: rgba(124,106,247,0.08);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .memory-dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .personas { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+
+    .badge {
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      padding: 4px 10px; border-radius: 20px; border: 1px solid; opacity: 0.7;
+      cursor: default;
+    }
+    .badge.code    { color: var(--code);    border-color: var(--code);    background: rgba(74,222,128,0.06); }
+    .badge.data    { color: var(--data);    border-color: var(--data);    background: rgba(56,189,248,0.06); }
+    .badge.writing { color: var(--writing); border-color: var(--writing); background: rgba(251,146,60,0.06); }
+    .badge.career  { color: var(--career);  border-color: var(--career);  background: rgba(167,139,250,0.06); }
+    .badge.unclear  { color: var(--unclear); border-color: var(--unclear); background: rgba(244,63,94,0.06); }
+    .badge.general  { color: #34d399; border-color: #34d399; background: rgba(52,211,153,0.06); }
+    .badge.chat     { color: #e879f9; border-color: #e879f9; background: rgba(232,121,249,0.06); }
+    .badge.math     { color: #fbbf24; border-color: #fbbf24; background: rgba(251,191,36,0.06); }
+    .badge.health   { color: #f87171; border-color: #f87171; background: rgba(248,113,113,0.06); }
+
+    main {
+      width: 100%; max-width: 860px; padding: 0 24px;
+      flex: 1; display: flex; flex-direction: column; gap: 16px;
+      position: relative; z-index: 1;
+    }
+
+    #chat { display: flex; flex-direction: column; gap: 20px; min-height: 200px; padding-bottom: 16px; }
+
+    .msg-user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--accent), #5b4fd4);
+      color: white; padding: 12px 18px;
+      border-radius: 18px 18px 4px 18px;
+      max-width: 70%; font-size: 15px; line-height: 1.5;
+      animation: slideInRight 0.3s ease;
+    }
+
+    .msg-bot { align-self: flex-start; max-width: 85%; animation: slideInLeft 0.3s ease; }
+
+    .intent-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 14px; border-radius: 8px; border: 1px solid;
+      margin-bottom: 10px;
+      font-family: 'Space Mono', monospace; font-size: 12px;
+      width: fit-content;
+    }
+    .intent-card.code    { color: var(--code);    border-color: var(--code);    background: rgba(74,222,128,0.08); }
+    .intent-card.data    { color: var(--data);    border-color: var(--data);    background: rgba(56,189,248,0.08); }
+    .intent-card.writing { color: var(--writing); border-color: var(--writing); background: rgba(251,146,60,0.08); }
+    .intent-card.career  { color: var(--career);  border-color: var(--career);  background: rgba(167,139,250,0.08); }
+    .intent-card.unclear  { color: var(--unclear); border-color: var(--unclear); background: rgba(244,63,94,0.08); }
+    .intent-card.general  { color: var(--general); border-color: var(--general); background: rgba(52,211,153,0.08); }
+    .intent-card.chat     { color: var(--chat);    border-color: var(--chat);    background: rgba(232,121,249,0.08); }
+    .intent-card.math     { color: var(--math);    border-color: var(--math);    background: rgba(251,191,36,0.08); }
+    .intent-card.health   { color: var(--health);  border-color: var(--health);  background: rgba(248,113,113,0.08); }
+
+    .confidence-bar { height: 4px; width: 60px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .confidence-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+    .code    .confidence-fill { background: var(--code); }
+    .data    .confidence-fill { background: var(--data); }
+    .writing .confidence-fill { background: var(--writing); }
+    .career  .confidence-fill { background: var(--career); }
+    .unclear .confidence-fill { background: var(--unclear); }
+    .general .confidence-fill { background: var(--general); }
+    .chat    .confidence-fill { background: var(--chat); }
+    .math    .confidence-fill { background: var(--math); }
+    .health  .confidence-fill { background: var(--health); }
+
+    .response-bubble {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 4px 18px 18px 18px;
+      padding: 16px 20px; font-size: 15px; line-height: 1.7;
+      white-space: pre-wrap; word-break: break-word;
+    }
+
+    .thinking {
+      align-self: flex-start; display: flex; align-items: center; gap: 8px;
+      color: var(--muted); font-family: 'Space Mono', monospace;
+      font-size: 12px; padding: 12px 0;
+    }
+
+    .dots span {
+      display: inline-block; width: 6px; height: 6px;
+      background: var(--accent); border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    .input-area {
+      position: sticky; bottom: 0;
+      background: linear-gradient(transparent, var(--bg) 40%);
+      padding: 16px 0 24px; z-index: 10;
+    }
+
+    .input-row {
+      display: flex; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 8px 8px 8px 18px;
+      transition: border-color 0.2s;
+    }
+
+    .input-row:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,106,247,0.15);
+    }
+
+    #input {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--text); font-family: 'Syne', sans-serif;
+      font-size: 15px; resize: none; max-height: 120px; line-height: 1.5;
+    }
+
+    #input::placeholder { color: var(--muted); }
+
+    #send {
+      background: linear-gradient(135deg, var(--accent), #5b4fd4);
+      border: none; color: white; width: 40px; height: 40px;
+      border-radius: 10px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; transition: transform 0.15s, opacity 0.15s; flex-shrink: 0;
+    }
+    #send:hover { transform: scale(1.05); }
+    #send:active { transform: scale(0.95); }
+    #send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    #reset-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); width: 40px; height: 40px;
+      border-radius: 10px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: all 0.15s; flex-shrink: 0;
+      title: "Reset conversation";
+    }
+    #reset-btn:hover { border-color: var(--unclear); color: var(--unclear); }
+
+    .hint {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; color: var(--muted);
+      text-align: center; margin-top: 10px;
+    }
+
+    .welcome { text-align: center; padding: 48px 0; color: var(--muted); }
+    .welcome-icon { font-size: 48px; margin-bottom: 16px; }
+    .welcome h2 { font-size: 20px; color: var(--text); margin-bottom: 8px; }
+    .welcome p { font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0 auto 12px; }
+    .memory-note { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); opacity: 0.7; }
+
+    .context-tag {
+      font-family: 'Space Mono', monospace; font-size: 10px;
+      color: var(--accent); opacity: 0.5; margin-bottom: 6px;
+    }
+
+    /* footer */
+    footer {
+      width: 100%; max-width: 860px;
+      padding: 12px 24px 24px;
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      position: relative; z-index: 1;
+    }
+
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInLeft  { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="logo">
+        <div class="logo-icon">🔀</div>
+        <div>
+          <h1>Prompt Router</h1>
+          <div class="subtitle">LLM-POWERED INTENT CLASSIFICATION</div>
+          <div class="author">by Mohammad Riyaz</div>
+        </div>
+      </div>
+    </div>
+    <div class="memory-badge">
+      <div class="memory-dot"></div>
+      MEMORY ON
+    </div>
+  </div>
+  <div class="personas">
+    <span class="badge code">🧑‍💻 code</span>
+    <span class="badge data">📊 data</span>
+    <span class="badge writing">✍️ writing</span>
+    <span class="badge career">💼 career</span>
+    <span class="badge unclear">🤔 unclear</span>
+    <span class="badge general">🌍 general</span>
+    <span class="badge chat">💬 chat</span>
+    <span class="badge math">🔢 math</span>
+    <span class="badge health">💪 health</span>
+  </div>
+</header>
+
+<main>
+  <div id="chat">
+    <div class="welcome">
+      <div class="welcome-icon">🔀</div>
+      <h2>Ask me anything</h2>
+      <p>I'll detect your intent and route you to the right expert — code, data, writing, career, general knowledge, math, health, or casual chat!</p>
+      <div class="memory-note">🧠 Memory enabled — I remember your conversation context</div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <textarea id="input" rows="1" placeholder="Type anything... @code @data @writing @career @general @chat @math @health"></textarea>
+      <button id="reset-btn" title="Reset conversation">🔄</button>
+      <button id="send" title="Send message">↑</button>
+    </div>
+    <div class="hint">Enter to send · Shift+Enter for new line · 🔄 to reset · 8 expert domains</div>
+  </div>
+</main>
+
+<footer>
+  Built by Mohammad Riyaz · LLM Prompt Router · 8 Expert Domains · Powered by Groq + Llama 3
+</footer>
+
+<script>
+  const chat     = document.getElementById('chat');
+  const input    = document.getElementById('input');
+  const send     = document.getElementById('send');
+  const resetBtn = document.getElementById('reset-btn');
+
+  const ICONS  = { code:'🧑200d💻', data:'📊', writing:'✍️', career:'💼', unclear:'🤔', general:'🌍', chat:'💬', math:'🔢', health:'💪' };
+  const LABELS = { code:'Code Expert', data:'Data Analyst', writing:'Writing Coach', career:'Career Advisor', unclear:'Needs Clarification', general:'General Knowledge', chat:'Casual Chat', math:'Math Expert', health:'Health Advisor' };
+
+  let msgCount = 0;
+
+  // Auto-resize textarea
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  });
+
+  // Enter to send
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  send.addEventListener('click', sendMessage);
+
+  // Reset conversation
+  resetBtn.addEventListener('click', async () => {
+    await fetch('/reset', { method: 'POST' });
+    chat.innerHTML = `
+      <div class="welcome">
+        <div class="welcome-icon">🔀</div>
+        <h2>Conversation reset</h2>
+        <p>Memory cleared. Start a fresh conversation!</p>
+        <div class="memory-note">🧠 Memory enabled — I remember your conversation context</div>
+      </div>`;
+    msgCount = 0;
+  });
+
+  function clearWelcome() {
+    const w = chat.querySelector('.welcome');
+    if (w) w.remove();
+  }
+
+  function appendUser(text) {
+    clearWelcome();
+    msgCount++;
+    const div = document.createElement('div');
+    div.className = 'msg-user';
+    div.textContent = text;
+    chat.appendChild(div);
+    scrollDown();
+  }
+
+  function appendThinking() {
+    const div = document.createElement('div');
+    div.className = 'thinking'; div.id = 'thinking';
+    div.innerHTML = `<div class="dots"><span></span><span></span><span></span></div> Classifying intent...`;
+    chat.appendChild(div);
+    scrollDown();
+  }
+
+  function removeThinking() {
+    const t = document.getElementById('thinking');
+    if (t) t.remove();
+  }
+
+  function appendBot(result) {
+    const intent = result.intent;
+    const conf   = Math.round(result.confidence * 100);
+    const resp   = result.response;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg-bot';
+
+    // Show memory context tag after first message
+    if (msgCount > 1) {
+      const ctag = document.createElement('div');
+      ctag.className = 'context-tag';
+      ctag.textContent = '🧠 using conversation context';
+      wrapper.appendChild(ctag);
+    }
+
+    // Intent card
+    const card = document.createElement('div');
+    card.className = `intent-card ${intent}`;
+    card.innerHTML = `
+      <span>${ICONS[intent] || '❓'}</span>
+      <span><strong>${LABELS[intent] || intent.toUpperCase()}</strong></span>
+      <span style="opacity:0.6">·</span>
+      <span>${conf}%</span>
+      <div class="confidence-bar">
+        <div class="confidence-fill" style="width: ${conf}%"></div>
+      </div>`;
+
+    // Response bubble
+    const bubble = document.createElement('div');
+    bubble.className = 'response-bubble';
+    bubble.textContent = resp;
+
+    wrapper.appendChild(card);
+    wrapper.appendChild(bubble);
+    chat.appendChild(wrapper);
+    scrollDown();
+  }
+
+  function scrollDown() {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+    send.disabled = true;
+
+    appendUser(text);
+    appendThinking();
+
+    try {
+      const res  = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+      removeThinking();
+      appendBot(data);
+    } catch (err) {
+      removeThinking();
+      appendBot({ intent: 'unclear', confidence: 0, response: 'Error connecting to server. Please try again.' });
+    }
+
+    send.disabled = false;
+    input.focus();
+  }
+</script>
+</body>
+</html>
